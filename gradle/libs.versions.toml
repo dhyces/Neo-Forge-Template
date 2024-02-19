@@ -1,0 +1,22 @@
+[versions]
+
+minecraft = "1.20.1"
+forge = "1.20.1-47.2.20"
+
+
+
+forgegradle = "[6.0,6.2)"
+librarian = "1.+"
+mixingradle = "0.7.+"
+mdg_plugin = "1.4.3"
+mdg_dsl = "1.5.1"
+
+[libraries]
+forge = { module = "net.minecraftforge:forge", version.ref = "forge" }
+mixin_processor = { module = "org.spongepowered:mixin", version = "0.8.5:processor" }
+
+[plugins]
+forgegradle = { id = "net.minecraftforge.gradle", version.ref = "forgegradle" }
+librarian = { id = "org.parchmentmc.librarian.forgegradle", version.ref = "librarian" }
+mixingradle = { id = "org.spongepowered.mixin", version.ref = "mixingradle" }
+mdg = { id = "org.groovymc.modsdotgroovy", version.ref = "mdg_plugin" }
