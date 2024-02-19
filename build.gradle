@@ -2,9 +2,7 @@ plugins {
     id "eclipse"
     id "idea"
     id "maven-publish"
-    alias(libs.plugins.forgegradle)
-    alias(libs.plugins.librarian)
-    alias(libs.plugins.mixingradle)
+    alias(libs.plugins.neogradle)
     alias(libs.plugins.mdg)
 }
 
@@ -30,69 +28,40 @@ sourceSets {
 
 java.toolchain.getLanguageVersion().set(JavaLanguageVersion.of(17))
 
-minecraft {
-    mappings channel: mapping_channel, version: mapping_version
+runs {
+    configureEach {
+        workingDirectory project.file("run")
 
-    accessTransformer = file("src/main/resources/META-INF/accesstransformer.cfg")
+        systemProperty "forge.logging.markers", "REGISTRIES"
+        systemProperty "forge.logging.console.level", "debug"
 
-    copyIdeResources = true
-
-    runs {
-        configureEach {
-            workingDirectory project.file("run")
-
-            property "forge.logging.markers", "REGISTRIES"
-            property "forge.logging.console.level", "debug"
-
-            mods {
-                "${mod_id}" {
-                    source sourceSets.main
-                }
-            }
-        }
-
-        client {
-            property "forge.enabledGameTestNamespaces", mod_id
-        }
-
-        server {
-            property "forge.enabledGameTestNamespaces", mod_id
-            args "--nogui"
-        }
-
-        gameTestServer {
-            property "forge.enabledGameTestNamespaces", mod_id
-        }
-
-        data {
-            workingDirectory project.file("run")
-
-            args "--mod", mod_id, "--all", "--output", file("src/generated/resources/"), "--existing", file("src/main/resources/")
-
-            mods {
-                "${mod_id}" {
-                    source sourceSets.main
-                    source sourceSets.datagen
-                }
-            }
-        }
+        modSource sourceSets.main
     }
-}
 
-mixin {
-    add sourceSets.main, mod_id + ".refmap.json"
-    config mod_id + ".mixins.json"
+    client {
+        systemProperty "forge.enabledGameTestNamespaces", mod_id
+    }
 
-    debug.verbose = true
-    debug.export = true
+    server {
+        systemProperty "forge.enabledGameTestNamespaces", mod_id
+        programArguments.addAll "--nogui"
+    }
+
+    gameTestServer {
+        systemProperty "forge.enabledGameTestNamespaces", mod_id
+    }
+
+    data {
+        programArguments.addAll "--mod", mod_id, "--all", "--output", file("src/generated/resources/"), "--existing", file("src/main/resources/")
+
+        modSource sourceSets.datagen
+    }
 }
 
 sourceSets.main.resources { srcDir "src/generated/resources" }
 
 dependencies {
-    minecraft(libs.forge)
-
-    annotationProcessor(libs.mixin.processor)
+    implementation(libs.neoforge)
 }
 
 tasks.named("processResources", ProcessResources).configure {

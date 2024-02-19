@@ -1,6 +1,8 @@
+import modsdotgroovy.Dependency
+
 ModsDotGroovy.make {
     modLoader = "javafml"
-    loaderVersion = "[${(this.libs.versions.forge as String).split("\\.")[0]},)"
+    loaderVersion = "[${libs.versions.fml.loader},)"
 
     license = this.buildProperties["mod_license"]
     issueTrackerUrl = this.buildProperties["mod_issues_url"]
@@ -13,14 +15,27 @@ ModsDotGroovy.make {
 
         version = this.version
 
-        description =
-        authors = (this.buildProperties["authors"] as String).split(",")
+        description = this.buildProperties["mod_description"]
+        authors = (this.buildProperties["mod_authors"] as String).split(",")
 
         logoFile = "assets/${modId}/logo.png"
 
         dependencies {
-            forge = "[${this.forgeVersion},)"
+            neoforge = ">=${this.libs.versions.neoforge}"
             minecraft = this.minecraftVersionRange
+        }
+
+        dependencies = dependencies.collect { dep ->
+            new Dependency() {
+                @Override
+                Map asForgeMap() {
+                    def map = dep.asForgeMap()
+                    def mandatory = map.mandatory
+                    map.remove('mandatory')
+                    map.put('type', mandatory ? 'required' : 'optional')
+                    return map
+                }
+            }
         }
     }
 }
