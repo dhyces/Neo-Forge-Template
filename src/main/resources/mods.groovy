@@ -13,8 +13,8 @@ ModsDotGroovy.make {
 
         version = this.version
 
-        description =
-        authors = (this.buildProperties["authors"] as String).split(",")
+        description = this.buildProperties["mod_description"]
+        authors = (this.buildProperties["mod_authors"] as String).split(",")
 
         logoFile = "assets/${modId}/logo.png"
 
